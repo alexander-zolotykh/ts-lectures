@@ -1,14 +1,19 @@
 import { output } from "./utils";
 import json from "./meteorites.json";
 
+// Простые исходные данные - массив строк
 const strings = ["one", "two", "three"];
 
+// Функция принимающая строку и возвращающая число
 const stringLength = (s: string) => s.length;
 
+// Преобразуем массив строк в массив чисел
 const lengths = strings.map(stringLength);
 
+// Преобразуем массив строк в другой массив строк
 const something = strings.map((s) => `${s}-${s}`);
 
+// Описание сырых данных по метеоритам
 type Meteorite = {
   name: string;
   id: string;
@@ -27,32 +32,36 @@ type Meteorite = {
 
 const meteorites: Meteorite[] = json;
 
+// Вытащим все названия метеоритов
 const meteoriteNames = meteorites.map((m) => m.name);
 
+// Type guard - функция уточняющая тип аргумента, подсказка для компилятора
 const isString = (x: any): x is string => {
   return typeof x === "string";
 };
 
-// [1, 2, 3]
-// 0 1 -> 1 2 -> 3 3 -> 6
-
+// Масса всех метеоритов
 const totalMass = meteorites
-  .map((m) => m.mass)
-  .filter(isString)
-  .map(Number)
-  .reduce((previous, current) => previous + current, 0);
+  .map((m) => m.mass) // вытащим поле mass
+  .filter(isString) // отфильтруем undefined
+  .map(Number) // преобразуем строки в числа
+  .reduce((previous, current) => previous + current, 0); // сложим все числа вместе
 
+// Количество метеоритов для которых неизвестна масса
 const nulls = meteorites.map((m) => m.mass).filter((m) => !isString(m)).length;
 
+// Сортированный список годов
 const years = meteorites
-  .map((m) => m.year)
-  .filter(isString)
-  .map((s) => s.slice(0, 4))
-  .map(Number)
+  .map((m) => m.year) // достаем поле year
+  .filter(isString) // отфильтруем undefined
+  .map((s) => s.slice(0, 4)) // вырежем год из полной даты
+  .map(Number) // строку в число
   .sort();
 
+// Метеорит у которого известны все параметры
 type StrictMeteorite = Required<Meteorite>;
 
+// Type guard для типа StrictMeteorite
 const isStrictMeteorite = (m: Meteorite): m is StrictMeteorite => {
   return (
     m.mass !== undefined &&
@@ -63,12 +72,7 @@ const isStrictMeteorite = (m: Meteorite): m is StrictMeteorite => {
   );
 };
 
-// const a = [1, 2, 3];
-// const b = [...a, 4, 5,]
-
-// const a = { a: 1 };
-// const b = { ...a, b: 1}
-
+// Функция подсчитывающая сколько метеоритов упало в конкретный год
 const meteoritesInYear = (year: number) =>
   meteorites
     .filter(isStrictMeteorite)
@@ -76,6 +80,7 @@ const meteoritesInYear = (year: number) =>
     .filter((m) => m.year === year)
     .map((m) => m.name);
 
+// Статистика падений по году
 const statistics = meteorites
   .filter(isStrictMeteorite)
   .map((m) => ({ ...m, year: Number(m.year.slice(0, 4)) }))
@@ -89,10 +94,12 @@ const statistics = meteorites
 
 const numbers = [1, 2, 3, 4, 5];
 
+// Пишем свой map с помощью reduce
 const mappedNumbers = numbers.reduce<number[]>((prev, curr) => {
   return [...prev, curr * 2];
 }, []);
 
+// Пишем свой filter с помощью reduce
 const filteredNumbers = numbers.reduce<number[]>((prev, curr) => {
   if (curr % 2 === 0) {
     return [...prev, curr];
